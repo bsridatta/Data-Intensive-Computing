@@ -9,7 +9,7 @@
 * **Review questions 2**: data-parallel processing systems
 
 ### Reading Assignments
-* **TensorFlow**: A system for large-scale machine learning
+* [**TensorFlow**](https://github.com/bsridatta/Data-Intensive-Computing/blob/master/Reading%20Assignment%201%20-%20TensorFlow%20.pdf): A system for large-scale machine learning
 * **MLlib**: Fast Training of GLMs using Spark MLlib
 
 ### Project
