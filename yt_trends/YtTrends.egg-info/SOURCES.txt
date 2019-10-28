@@ -1,0 +1,9 @@
+setup.py
+YtTrends.egg-info/PKG-INFO
+YtTrends.egg-info/SOURCES.txt
+YtTrends.egg-info/dependency_links.txt
+YtTrends.egg-info/top_level.txt
+dashboard/__init__.py
+dashboard/analytics.py
+youtube/__init__.py
+youtube/ytbridge.py
