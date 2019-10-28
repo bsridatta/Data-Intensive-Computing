@@ -1,4 +1,4 @@
-# Code inspiration and snippets from:
+# Code inspiration from:
 # spark streaming with youtube api
 # https://github.com/Drathore0007/Spark-Streaming-with-YouTube-Data-API
 import subprocess
@@ -26,8 +26,8 @@ def send_to_kafka(parsed_response):
 if __name__ == '__main__':
 
     current_path = os.path.dirname(sys.argv[0])
-    # TODO debug - Causing problems, producer does not work
-    # Why? Automate Kafka and Zookeeper initialization
+    
+    # Automate Kafka and Zookeeper initialization
     subprocess.call(current_path+"/run_servers.bash")
 
     # Wait for the processes to start
