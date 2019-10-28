@@ -10,7 +10,7 @@ from googleapiclient.errors import HttpError
 class YouTubeHandler:
     def __init__(self):
         # retrieve YouTube Data API v3 from environ variables
-        DEVELOPER_KEY = os.environ.get("YT_DATA_API_V3_KEY")
+        DEVELOPER_KEY = os.environ.get("YT_DATA_API_V3_KEY2")
         API_SERVICE_NAME = 'youtube'
         API_VERSION = 'v3'
 
@@ -24,7 +24,6 @@ class YouTubeHandler:
 
         videoCategoryId -- 0 default, do not filter by category Id
         """
-
         try:
             # For parameters refer -- https://developers.google.com/youtube/v3/guides/implementation/videos
             request = self.youtube_service.videos().list(part='id,snippet,statistics',
@@ -35,8 +34,9 @@ class YouTubeHandler:
                                                         )
             response = request.execute()
         
-        except HttpError:
-            pass
+        except HttpError as e:
+            print("HTTP error in bridge: ", str(e))
+            response = []
         
         return response
 

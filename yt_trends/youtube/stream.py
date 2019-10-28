@@ -2,7 +2,7 @@
 # spark streaming with youtube api
 # https://github.com/Drathore0007/Spark-Streaming-with-YouTube-Data-API
 import subprocess
-import os
+from os.path import dirname
 import sys
 import time
 
@@ -10,6 +10,7 @@ import json
 
 from youtube.bridge import *
 from kafka import SimpleProducer, KafkaClient
+
 
 def send_to_kafka(parsed_response):
     try:
@@ -25,10 +26,9 @@ def send_to_kafka(parsed_response):
 
 if __name__ == '__main__':
 
-    current_path = os.path.dirname(sys.argv[0])
-    
     # Automate Kafka and Zookeeper initialization
-    subprocess.call(current_path+"/run_servers.bash")
+    root = dirname(dirname(sys.argv[0]))
+    subprocess.call(root+"/server_setup/run_servers.bash")
 
     # Wait for the processes to start
     time.sleep(5)
@@ -40,9 +40,15 @@ if __name__ == '__main__':
     yh = YouTubeHandler()
 
     while True:
-        response = yh.request_videos()
-        parsed_response = yh.parse_response(response)
-        send_to_kafka(parsed_response)
-        print("streaming..", len(parsed_response))
-        time.sleep(3)
+        response = yh.request_videos(maxResults=1)
+        if len(response) != 0:
+            parsed_response = yh.parse_response(response)
+            send_to_kafka(parsed_response)
+            print("streaming...", len(parsed_response))
+        else:
+            print("streaming...", len(response))
+            #send_to_kafka(response)
+
+        # Remember only 10k requests per day
+        time.sleep(30)
         
