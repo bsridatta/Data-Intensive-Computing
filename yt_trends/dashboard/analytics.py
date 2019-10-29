@@ -12,19 +12,20 @@ import json
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
+from pyspark.sql import SparkSession
+
 
 def getTrendingTags(videos):
-    print("videos")
-    pass
-
-def function_to_split_rows(records):
-    if records.count() !=0:
-        spark_dataframe = json.loads(records)
-        spark_dataframe.show(2)
-        spark_dataframe.write.insertInto('default.youtube_data', overwrite=False)
-        print("its done")
+    if videos.count != 0:
+        df = spark.read.json(videos)
+        df.printSchema()
+        df.write.saveAsTable('YT_Data.Stream')
+    
     else:
-        print("Empty  RDD")
+        # Could also prevent at streaming
+        # Either query is empty or quota is expired
+        print("Empty RDD")
+
 
 if __name__ == "__main__":
 
@@ -32,13 +33,23 @@ if __name__ == "__main__":
     topic = "youtube_stream"
 
     sc = SparkContext("local[*]", appName="yt_trends")
-    # sc.setLogLevel("ERROR")
+    sc.setLogLevel("ERROR")
+
     # batch interval
     # Note: The youtube data is updated every n seconds as well
-    ssc = StreamingContext(sc, 19)
+    ssc = StreamingContext(sc, 1)
+    
+    spark = (SparkSession
+             .builder
+             .enableHiveSupport()
+             .getOrCreate())
 
-    kafka_messages = KafkaUtils.createStream(ssc, zkQuorum, "youtube_stream_consumer", {topic: 1}).map(lambda x: x[1])
-    kafka_messages.foreachRDD(function_to_split_rows)
+    print("*Streaming*")
+    # Only the json is send as message without key hence just take the value
+    kafka_messages = KafkaUtils.createStream(
+        ssc, zkQuorum, "youtube_stream_consumer", {topic: 1}).map(lambda x: x[1])
+
+    kafka_messages.foreachRDD(getTrendingTags)
 
     ssc.start()
     ssc.awaitTermination()
