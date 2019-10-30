@@ -39,26 +39,37 @@ if __name__ == '__main__':
 
     yh = YouTubeHandler()
 
-    RepeatData = True
+    response = yh.request_videos(maxResults=50)
+    
+    if len(response) != 0:
+        parsed_response = yh.parse_response(response)
 
-    while True:
-        response = yh.request_videos(maxResults=30)
-        if len(response) != 0:
-            parsed_response = yh.parse_response(response)
-            # For experiments
-            while True:
-                send_to_kafka(parsed_response)
-                print("streaming...", len(parsed_response))
-                if RepeatData==False:
-                    break
-                else:
-                    print("looping")
-                    time.sleep(1)
-        else:
-            print("streaming...", len(response))
-            send_to_kafka(response)
+    while(True):
+        for x in parsed_response:
+            send_to_kafka(x)
+            print("streaming")
+            time.sleep(2)
+    
+    # RepeatData = True
+
+    # while True:
+    #     response = yh.request_videos(maxResults=5)
+    #     if len(response) != 0:
+    #         parsed_response = yh.parse_response(response)
+    #         # For experiments
+    #         while True:
+    #             send_to_kafka(parsed_response)
+    #             print("streaming...", len(parsed_response))
+    #             if RepeatData==False:
+    #                 break
+    #             else:
+    #                 print("looping")
+    #                 time.sleep(2)
+    #     else:
+    #         print("streaming...", len(response))
+    #         send_to_kafka(response)
 
         # Remember only 10k requests per day
-        print("Not looping")
-        time.sleep(10)
+        # print("Not looping")
+        # time.sleep(10)
         

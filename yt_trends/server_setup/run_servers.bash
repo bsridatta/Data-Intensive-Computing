@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+# Can have all these in .bashrc or .bash_profile instead
+
 # Kafka Path
 export KAFKA_HOME="/home/datta/lab/_KTH_ACADEMIA/id2210/kafka_2.11-2.3.0"
 export PATH=$KAFKA_HOME/bin:$PATH
@@ -22,5 +24,9 @@ $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properti
 # start Kafka producer
 # $KAFKA_HOME/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic youtube_stream
 
-# # consumer
+# consumer
 # $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic youtube_stream --from-beginning
+
+# Hive
+# export HIVE_HOME="/home/datta/lab/_KTH_ACADEMIA/id2210/apache-hive-3.1.2-bin"
+# export PATH=$PATH:$HIVE_HOME/bin

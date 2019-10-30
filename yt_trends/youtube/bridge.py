@@ -65,6 +65,9 @@ class YouTubeHandler:
                                publisedAt=item['snippet']['publishedAt']
                                )
 
+#  > create table youtube_data (id string, title string, ch_id string, cat_id string, ch_title string, publised_date timestamp, likeCount int, viewCount int, commentCount int, dislikeCount int, favoriteCount int) row format delimited fields terminated by '\t'  stored as parquet;
+
+
             # Statistics contains a dictionary containing
             # contains the count of views, likes, dislikes, favorites, comments
             parsed_item.update(item['statistics'])
