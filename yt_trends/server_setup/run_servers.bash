@@ -27,6 +27,6 @@ $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properti
 # consumer
 # $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic youtube_stream --from-beginning
 
-# Hive
+# Hive EXPERIMENT NOT USED
 # export HIVE_HOME="/home/datta/lab/_KTH_ACADEMIA/id2210/apache-hive-3.1.2-bin"
 # export PATH=$PATH:$HIVE_HOME/bin

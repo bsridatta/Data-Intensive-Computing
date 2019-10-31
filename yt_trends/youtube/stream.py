@@ -5,7 +5,6 @@ import subprocess
 from os.path import dirname
 import sys
 import time
-
 import json
 
 from youtube.bridge import *
@@ -39,10 +38,13 @@ if __name__ == '__main__':
 
     yh = YouTubeHandler()
 
-    response = yh.request_videos(maxResults=10)
+    response = yh.request_videos(maxResults=50)
     
     if len(response) != 0:
         parsed_response = yh.parse_response(response)
+
+    # Sending video by video for demonstration
+    # As it could take a while to actually see changes in trends in youtube
 
     while(True):
         for x in parsed_response:
@@ -51,6 +53,8 @@ if __name__ == '__main__':
             print("streaming")
             time.sleep(5)
         print("Loop")
+
+    # For debugging
     # RepeatData = True
 
     # while True:

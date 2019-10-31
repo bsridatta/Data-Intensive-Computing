@@ -25,11 +25,14 @@ def saveData(videos):
 
     if videos.count != 0:
         df = spark.read.json(videos)
+        # Empty RDD or some error leads to missing columns
         if (len(df.head(1)) > 0 and len(df.columns) == 11):
+            # Just taking likes for now
             df = df.select("channelTitle", "likeCount") 
             df = df.withColumn("likeCount", df["likeCount"].cast(IntegerType()))
             print("new feeds :", df.count()," Elements",len(df.columns))
             df.printSchema()
+            # Save to spark warehouse to be used for visualization
             df.write.mode("append").saveAsTable("default.yt_viz")
 
     else:
@@ -55,29 +58,15 @@ if __name__ == "__main__":
              .builder
              .getOrCreate())
 
+    # Essential to start writing to the table already created
     spark.conf.set("spark.sql.legacy.allowCreatingManagedTableUsingNonemptyLocation","true")
 
     print("*Streaming*")
 
-    stream_schema = StructType([
-                    StructField("categoryId",StringType(),True),
-                    StructField("channelId",StringType(),True),
-                    StructField("channelTitle",StringType(),True),
-                    StructField("commentCount",StringType(),True),
-                    StructField("dislikeCount",StringType(),True),
-                    StructField("favoriteCount",StringType(),True),
-                    StructField("id",StringType(),True),
-                    StructField("likeCount",StringType(),True),
-                    StructField("publsedAt",StringType(),True),
-                    StructField("title",StringType(),True),
-                    StructField("viewCount",StringType(),True)
-    ])
-    
-    df_stream = spark.createDataFrame(sc.emptyRDD(), stream_schema)
-
     # Only the json is send as message without key hence just take the value
     kafka_messages = KafkaUtils.createStream(
         ssc, zkQuorum, "youtube_stream_consumer", {topic: 1}).map(lambda x: x[1])
+
     # As the data is serialized we need to parse back from JSON
     kafka_messages.foreachRDD(saveData)
 
