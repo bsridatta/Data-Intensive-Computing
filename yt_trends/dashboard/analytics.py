@@ -18,18 +18,19 @@ from pyspark.sql import SparkSession, SQLContext
 from pyspark.sql.types import StructType
 from pyspark.sql.types import StructField
 from pyspark.sql.types import StringType
+from pyspark.sql.types import IntegerType
 
-global df_stream
 
-def getTrendingTags(videos):
+def saveData(videos):
+
     if videos.count != 0:
         df = spark.read.json(videos)
-      
-        if (len(df.head(1)) > 0):
-            df_new = df.exceptAll(df_stream)
-            df_stream = df_stream.union(df)
-            print("new feeds :", df_new.count())
-            df_new.write.mode("append").saveAsTable("default.yt_viz")
+        if (len(df.head(1)) > 0 and len(df.columns) == 11):
+            df = df.select("channelTitle", "likeCount") 
+            df = df.withColumn("likeCount", df["likeCount"].cast(IntegerType()))
+            print("new feeds :", df.count()," Elements",len(df.columns))
+            df.printSchema()
+            df.write.mode("append").saveAsTable("default.yt_viz")
 
     else:
         # Could also prevent at streaming
@@ -48,7 +49,7 @@ if __name__ == "__main__":
 
     # batch interval
     # Note: The youtube data is updated every n seconds as well
-    ssc = StreamingContext(sc, 2)
+    ssc = StreamingContext(sc, 10)
     
     spark = (SparkSession
              .builder
@@ -77,9 +78,8 @@ if __name__ == "__main__":
     # Only the json is send as message without key hence just take the value
     kafka_messages = KafkaUtils.createStream(
         ssc, zkQuorum, "youtube_stream_consumer", {topic: 1}).map(lambda x: x[1])
-
-    kafka_messages.foreachRDD(getTrendingTags)
-    # kafka_messages.mapWithState(StateSpe)
+    # As the data is serialized we need to parse back from JSON
+    kafka_messages.foreachRDD(saveData)
 
     ssc.start()
     ssc.awaitTermination()

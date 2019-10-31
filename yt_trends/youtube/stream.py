@@ -39,17 +39,18 @@ if __name__ == '__main__':
 
     yh = YouTubeHandler()
 
-    response = yh.request_videos(maxResults=50)
+    response = yh.request_videos(maxResults=10)
     
     if len(response) != 0:
         parsed_response = yh.parse_response(response)
 
     while(True):
         for x in parsed_response:
+            print(x)
             send_to_kafka(x)
             print("streaming")
-            time.sleep(2)
-    
+            time.sleep(5)
+        print("Loop")
     # RepeatData = True
 
     # while True:
